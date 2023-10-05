@@ -1,5 +1,5 @@
 {
-    "name": "Addonize/extension-manager",
+    "name": "addonize/extension-manager",
     "type": "library",
     "description": "Enhance Laravel Applications: Organized & Scalable",
     "keywords": ["laravel", "laravel-package", "laravel-modules", "laravel-application", "laravel-plugin", "laravel-addons", "laravel-extensions"],
