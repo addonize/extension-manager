@@ -1,0 +1,19 @@
+{
+    "name": "$VENDOR$/$KEBAB_NAME$",
+    "description": "$STUDLY_NAME$ plugin made by $AUTHOR_NAME$",
+    "license": "MIT",
+    "authors": $AUTHORS$,
+    "autoload": {
+        "psr-4": {
+            "$EXTENSION_NAMESPACE$\\$STUDLY_NAME$\\": "app",
+            "$EXTENSION_NAMESPACE$\\$STUDLY_NAME$\\Database\\Factories\\": "database/factories/",
+            "$EXTENSION_NAMESPACE$\\$STUDLY_NAME$\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "$EXTENSION_NAMESPACE$\\$STUDLY_NAME$\\Tests\\": "tests/"
+        }
+    },
+    "require": {}
+}

@@ -1,0 +1,220 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * Addonize
+ * Copyright (C) 2023 Ifeoluwa Adewunmi
+ * Released under the MIT License.
+ */
+
+// path
+$path = [
+    'boot' => 'bootstrap',
+    'base' => 'addons/extensions',
+];
+
+// command prefix start with
+$usableCommands = [
+    'db:s', // db:seed, not db:wipe
+    'test',
+    'migrate',
+
+    'addonize',
+    'new',
+    'custom',
+    'make',
+    'extension',
+];
+
+// find laravel project directory
+$rootDir = $workDir = getcwd();
+while (1) {
+    if (file_exists($rootDir . DIRECTORY_SEPARATOR . $path['boot'] . DIRECTORY_SEPARATOR . 'app.php')) {
+        break;
+    }
+
+    $position = strrpos($rootDir, DIRECTORY_SEPARATOR);
+    if ($position === false) {
+        echo "Oops! Sorry, laravel project is not found in your current path" . PHP_EOL;
+        echo "Try to run 'extension' within a laravel project root directory" . PHP_EOL;
+        return 1;
+    }
+
+    $rootDir = substr($rootDir, 0, strrpos($rootDir, DIRECTORY_SEPARATOR));
+}
+
+if (!file_exists($rootDir . '/vendor/autoload.php')) {
+    echo "You must first install composer by running 'composer install'";
+    return 1;
+}
+
+$startPosition = strpos($workDir, DIRECTORY_SEPARATOR .  $path['base']  . DIRECTORY_SEPARATOR);
+if (!$startPosition) {
+    $workDir = $rootDir;
+}
+
+while ($startPosition !== false) {
+    if (file_exists($workDir . DIRECTORY_SEPARATOR . 'composer.json')) {
+        break;
+    }
+
+    $position = strrpos($workDir, DIRECTORY_SEPARATOR);
+    if ($position === false) {
+        $workDir = $rootDir;
+        return 1;
+    }
+
+    $workDir = substr($workDir, 0, strrpos($workDir, DIRECTORY_SEPARATOR));
+}
+
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader
+| for our application. We just need to utilize it! We'll require it
+| into the script here so that we do not have to worry about the
+| loading of any classes "manually". Feels great to relax.
+|
+*/
+
+define('LARAVEL_START', microtime(true));
+
+require $rootDir . '/vendor/autoload.php';
+/** @var \Illuminate\Foundation\Application $app */
+$app = require_once $rootDir . '/bootstrap/app.php';
+
+$asExtension = $workDir !== $rootDir;
+$input = new Symfony\Component\Console\Input\ArgvInput;
+$grabCommand = $input->getFirstArgument();
+if (is_null($grabCommand)) {
+    $grabCommand = '';
+}
+
+if (!\Illuminate\Support\Str::startsWith($grabCommand, $usableCommands)) {
+    $asExtension = false;
+}
+
+// change path for extension
+if ($asExtension) {
+    $extensionKey = substr($workDir, strrpos($workDir, DIRECTORY_SEPARATOR) + 1);
+    echo "Work Extension: " . $extensionKey . PHP_EOL;
+
+    $composer = json_decode(file_get_contents($workDir . DIRECTORY_SEPARATOR . 'composer.json'), true);
+
+    if ($classNamespace = array_search('src', $composer['autoload']['psr-4'], true)) {
+        $classNamespace = substr($classNamespace, 0, -1);
+    } else {
+        $classNamespace = array_keys($composer['autoload']['psr-4'])[0];
+        $classNamespace = \Illuminate\Support\Str::before($classNamespace, '\\');
+        $classNamespace .= '\\' . \Illuminate\Support\Str::studly($extensionKey);
+    }
+
+    unset($composer);
+
+    $app->useAppPath($workDir . '/app');
+    $app->useDatabasePath($workDir . '/database');
+    $app->extensionClassNamespace = $classNamespace;
+
+    // inject namespace
+    $property = new ReflectionProperty($app, 'namespace');
+    $property->setAccessible(true);
+    $property->setValue($app, $classNamespace . '\\');
+    $property->setAccessible(false);
+
+    require __DIR__ . '/../src/Modified/TestMakeCommand.php';
+    require __DIR__ . '/../src/Modified/FactoryMakeCommand.php';
+    require __DIR__ . '/../src/Modified/SeedCommand.php';
+    require __DIR__ . '/../src/Modified/SeederMakeCommand.php';
+    require __DIR__ . '/../src/Modified/TestCommand.php';
+}
+
+/*
+|--------------------------------------------------------------------------
+| Run The Artisan Application
+|--------------------------------------------------------------------------
+|
+| When we run the console application, the current CLI command will be
+| executed in this console and the response sent back to a terminal
+| or another output device for the developers. Here goes nothing!
+|
+*/
+
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+
+$status = $kernel->handle($input, new Symfony\Component\Console\Output\ConsoleOutput);
+
+// make:controller modified for extension
+if ($asExtension && $grabCommand === 'make:controller' && $input->getArgument('name')) {
+    $fileName = $workDir . '/app/Http/Controllers/' . str_replace('\\', DIRECTORY_SEPARATOR, $input->getArgument('name')) . '.php';
+    $content = file_get_contents($fileName);
+
+    if (!str_contains($content, 'use App\Http\Controllers\Controller;')) {
+        $content = str_replace(
+            "use Illuminate\Http\Request;",
+            "use Illuminate\Http\Request;\nuse App\Http\Controllers\Controller;",
+            $content
+        );
+    }
+
+    file_put_contents($fileName, $content);
+}
+
+// make:request modified for laravel and extension
+if ($grabCommand === 'make:request' && $input->getArgument('name')) {
+    $fileName = $workDir . '/app/Http/Requests/' . str_replace('\\', DIRECTORY_SEPARATOR, $input->getArgument('name')) . '.php';
+    $content = file_get_contents($fileName);
+
+    if (strpos($content, 'use App\Http\Controllers\Controller;') === false) {
+        $content = str_replace(
+            "return false;",
+            "return true;",
+            $content
+        );
+
+        $content = str_replace(
+            <<<"TXT"
+                public function rules(): array
+                {
+                    return [
+                        //
+                    ];
+                }
+            TXT,
+            <<<'TXT'
+                public function rules(): array
+                {
+                    return match (\request()->route()->getActionMethod()) {
+                        default => [],
+                    };
+                }
+
+                public function attributes(): array
+                {
+                    return [
+                        //
+                    ];
+                }
+            TXT,
+            $content
+        );
+    }
+
+    file_put_contents($fileName, $content);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Shutdown The Application
+|--------------------------------------------------------------------------
+|
+| Once Artisan has finished running, we will fire off the shutdown events
+| so that any final work may be done by the application before we shut
+| down the process. This is the last thing to happen to the request.
+|
+*/
+
+$kernel->terminate($input, $status);
+
+exit($status);

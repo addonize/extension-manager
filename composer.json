@@ -1,0 +1,85 @@
+{
+    "name": "Addonize/extension-manager",
+    "type": "library",
+    "description": "Enhance Laravel Applications: Organized & Scalable",
+    "keywords": ["laravel", "laravel-package", "laravel-modules", "laravel-application", "laravel-plugin", "laravel-addons", "laravel-extensions"],
+    "license": "MIT",
+    "homepage": "https://extmanager.addonize.com",
+    "support": {
+        "issues": "https://github.com/addonize/extension-manager/issues",
+        "source": "https://github.com/addonize/extension-manager",
+        "docs": "https://extmanager.addonize.com"
+    },
+    "authors": [
+        {
+            "name": "Ifeoluwa Adewunmi",
+            "email": "ifeoluwa.adewunmi94@gmail.com",
+            "homepage": "https://github.com/addonize",
+            "role": "Creator"
+        }
+    ],
+    "bin": [
+        "bin/addonize",
+        "bin/extension"
+    ],
+    "require": {
+        "php": "^8.0.2",
+        "laravel/framework": "^9.0|^10.0",
+        "wikimedia/composer-merge-plugin": "dev-master",
+        "nelexa/zip": "^4.0"
+    },
+    "require-dev": {
+        "brainmaestro/composer-git-hooks": "^2.8",
+        "friendsofphp/php-cs-fixer": "^3.9",
+        "mockery/mockery": "^1.5",
+        "jetbrains/phpstorm-attributes": "^1.0",
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^4.26"
+    },
+    "autoload": {
+        "psr-4": {
+            "Addonize\\ExtensionManager\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Addonize\\ExtensionManager\\Providers\\PluginServiceProvider"
+            ]
+        },
+        "hooks": {
+            "pre-commit": [
+                "composer check-style",
+                "composer test"
+            ],
+            "pre-push": [
+                "composer test",
+                "composer check-style"
+            ]
+        }
+    },
+    "scripts": {
+        "post-update-cmd": [
+            "cghooks remove",
+            "cghooks add --ignore-lock",
+            "cghooks update"
+        ],
+        "post-merge": "composer install",
+        "post-install-cmd": [
+            "cghooks remove",
+            "cghooks add --ignore-lock",
+            "cghooks update"
+        ],
+        "cghooks": "vendor/bin/cghooks",
+        "check-style": "php-cs-fixer fix --using-cache=no --diff --dry-run --ansi",
+        "fix-style": "php-cs-fixer fix --using-cache=no --ansi",
+        "test": "phpunit --colors",
+        "psalm": "psalm --show-info=true --no-cache",
+        "psalm-fix": "psalm --no-cache --alter --issues=MissingReturnType,MissingParamType"
+    },
+    "scripts-descriptions": {
+        "test": "Run all tests.",
+        "check-style": "Run style checks (only dry run - no fixing!).",
+        "fix-style": "Run style checks and fix violations."
+    }
+}

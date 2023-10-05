@@ -1,0 +1,23 @@
+<?php
+
+/*
+ * Addonize
+ * Copyright (C) 2023 Ifeoluwa Adewunmi
+ * Released under the MIT License.
+ */
+
+namespace $NAMESPACE$\Database\Seeders;
+
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Model::unguard();
+        // $this->call("OthersTableSeeder");
+    }
+}

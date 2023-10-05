@@ -1,0 +1,74 @@
+<?php
+
+/*
+ * Addonize
+ * Copyright (C) 2023 Ifeoluwa Adewunmi
+ * Released under the MIT License.
+ */
+
+namespace $NAMESPACE$\Providers;
+
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+
+class $STUDLY_NAME$ServiceProvider extends BaseServiceProvider
+{
+    /**
+     * Boot the application events.
+     */
+    public function boot(): void
+    {
+        $this->registerTranslations();
+        $this->registerConfig();
+        $this->registerViews();
+
+        $this->loadMigrationsFrom(dirname(__DIR__, 2) . '/database/migrations');
+
+        $this->app->register(RouteServiceProvider::class);
+
+        // Event::listen(UserCreated::class, UserCreatedListener::class);
+    }
+
+    /**
+     * Register the service provider.
+     */
+    public function register(): void
+    {
+        // if ($this->app->runningInConsole()) {
+            $this->app->register(CommandServiceProvider::class);
+        // }
+    }
+
+    /**
+     * Register config.
+     */
+    protected function registerConfig(): void
+    {
+        $this->mergeConfigFrom(
+            dirname(__DIR__, 2) . '/config/$KEBAB_NAME$.php', '$KEBAB_NAME$'
+        );
+    }
+
+    /**
+     * Register views.
+     */
+    public function registerViews(): void
+    {
+        $this->loadViewsFrom(dirname(__DIR__, 2) . '/resources/views', '$STUDLY_NAME$');
+    }
+
+    /**
+     * Register translations.
+     */
+    public function registerTranslations(): void
+    {
+        $this->loadTranslationsFrom(dirname(__DIR__, 2) . '/resources/lang', '$STUDLY_NAME$');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     */
+    public function provides(): array
+    {
+        return [];
+    }
+}

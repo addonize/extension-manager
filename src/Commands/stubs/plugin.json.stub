@@ -1,0 +1,17 @@
+{
+    "fskey": "$STUDLY_NAME$",
+    "name": "$STUDLY_NAME$",
+    "description": "$STUDLY_NAME$ plugin made by $AUTHOR_NAME$",
+    "author": "$AUTHOR_NAME$",
+    "authorLink": "$AUTHOR_LINK$",
+    "version": "1.0.0",
+    "scene": [],
+    "accessPath": "/$KEBAB_NAME$",
+    "settingsPath": "/$KEBAB_NAME$/setting",
+    "providers": [
+        "$PLUGIN_NAMESPACE$\\$STUDLY_NAME$\\Providers\\$STUDLY_NAME$ServiceProvider",
+        "$PLUGIN_NAMESPACE$\\$STUDLY_NAME$\\Providers\\ExceptionServiceProvider"
+    ],
+    "autoloadFiles": [],
+    "aliases": {}
+}

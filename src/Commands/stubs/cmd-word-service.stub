@@ -1,0 +1,27 @@
+<?php
+
+/*
+ * Addonize
+ * Copyright (C) 2023 Ifeoluwa Adewunmi
+ * Released under the MIT License.
+ */
+
+namespace Extensions\$STUDLY_NAME$\Services;
+
+use Ifeadewunmi\CmdWordManager\Traits\CmdWordResponseTrait;
+
+class CmdWordService
+{
+    use CmdWordResponseTrait;
+
+    public function cmdWord(array $wordBody)
+    {
+        \info(__CLASS__ . '::' . __FUNCTION__, $wordBody);
+
+        return $this->success([
+            'extKey' => basename(dirname(__DIR__, 2)),
+            'cmdWord' => __FUNCTION__,
+            'wordBody' => $wordBody,
+        ]);
+    }
+}

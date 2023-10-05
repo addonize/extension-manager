@@ -1,0 +1,55 @@
+<?php
+
+/*
+ * Addonize
+ * Copyright (C) 2023 Ifeoluwa Adewunmi
+ * Released under the MIT License.
+ */
+
+// use App\Utilities\ConfigUtility;
+// use App\Utilities\SubscribeUtility;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    protected $wordBody = [
+        // 'type' => SubscribeUtility::TYPE_USER_ACTIVITY,
+        // 'extKey' => '$SNAKE_NAME$',
+        // 'cmdWord' => 'stats',
+    ];
+
+    protected $configItems = [
+        // [
+        //     'item_tag' => '$SNAKE_NAME$',
+        //     'item_key' => '$SNAKE_NAME$_config',
+        //     'item_type' => 'string',
+        //     'item_value' => null,
+        // ],
+    ];
+
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        // addSubscribeItem
+        // \AddonizeWordCmd::extension()->addSubscribeItem($this->wordBody);
+
+        // addKeyValues to Config table
+        // ConfigUtility::addConfigItems($this->configItems);
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // removeSubscribeItem
+        // \AddonizeWordCmd::extension()->removeSubscribeItem($this->wordBody);
+
+        // removeKeyValues from Config table
+        // ConfigUtility::removeConfigItems($this->configItems);
+    }
+};

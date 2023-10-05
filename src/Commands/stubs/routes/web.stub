@@ -1,0 +1,35 @@
+<?php
+
+/*
+ * Addonize
+ * Copyright (C) 2023 Ifeoluwa Adewunmi
+ * Released under the MIT License.
+ */
+
+use Illuminate\Support\Facades\Route;
+use $EXTENSION_NAMESPACE$\$STUDLY_NAME$\Http\Controllers as WebController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::group([], function() {
+    Route::get('$KEBAB_NAME$', [WebController\$STUDLY_NAME$SettingController::class, 'index'])->name('$KEBAB_NAME$.index');
+    Route::get('$KEBAB_NAME$/setting', [WebController\$STUDLY_NAME$SettingController::class, 'showSettingView'])->name('$KEBAB_NAME$.setting');
+    Route::post('$KEBAB_NAME$/setting', [WebController\$STUDLY_NAME$SettingController::class, 'saveSetting']);
+});
+
+// without VerifyCsrfToken
+// Route::withoutMiddleware([
+//    \App\Http\Middleware\EncryptCookies::class,
+//    \App\Http\Middleware\VerifyCsrfToken::class,
+// ])->group(function() {
+//     Route::get('$KEBAB_NAME$', [WebController\$STUDLY_NAME$SettingController::class, 'index']);
+// });
